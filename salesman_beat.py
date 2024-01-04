@@ -166,9 +166,7 @@ def merge_results(**kwargs):
     merged_df = merged_df[['distributor_id', 'distributor_code', 'distributor_name', 'salesman_id', 'salesman_code',
                            'salesman_name', 'salesman_wise_sales', 'invoice_date', 'beat_id', 'beat_code', 'beat_name', 'beat_wise_sales']]
     print("this the list of columns in result merged/n", merged_df.columns)
-    # merged_df.to_sql(table_name, con,
-    #                  if_exists='append', index=False, method='multi')
-
+    
     try:
         merged_df.to_sql(table_name, con, if_exists='append',
                          index=False, method='multi', schema=schema_name, )
