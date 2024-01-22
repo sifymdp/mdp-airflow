@@ -39,7 +39,7 @@ select
             FROM
                rpt_awll1201.tbl_sales_data
             WHERE
-                transaction_type = 'Sales' AND invoice_date >= '2023-06-01' AND invoice_date <= '2023-06-30'
+                transaction_type = 'Sales' AND invoice_date >= '2023-07-01' AND invoice_date <= '2023-07-31'
             GROUP by
             distributor_id, distributor_code,distributor_name,
                 salesman_id, salesman_code, salesman_name,
@@ -57,7 +57,7 @@ select
             FROM
                rpt_awll1201.tbl_sales_data
             WHERE
-                transaction_type = 'Sales Return' AND invoice_date >= '2023-06-01' AND invoice_date <= '2023-06-30'
+                transaction_type = 'Sales Return' AND invoice_date >= '2023-07-01' AND invoice_date <= '2023-07-31'
             GROUP by
             distributor_id, distributor_code,distributor_name,
                 salesman_id, salesman_code, salesman_name,
@@ -95,7 +95,7 @@ beat_query = """
             FROM
                rpt_awll1201.tbl_sales_data
             WHERE
-                transaction_type = 'Sales' AND invoice_date >= '2023-06-01' AND invoice_date <= '2023-06-30'
+                transaction_type = 'Sales' AND invoice_date >= '2023-07-01' AND invoice_date <= '2023-07-31'
             GROUP by
             distributor_id, distributor_code,distributor_name,
                 beat_id, beat_code, beat_name,
@@ -113,7 +113,7 @@ beat_query = """
             FROM
                rpt_awll1201.tbl_sales_data
             WHERE
-                transaction_type = 'Sales Return' AND invoice_date >= '2023-06-01' AND invoice_date <= '2023-06-30'
+                transaction_type = 'Sales Return' AND invoice_date >= '2023-07-01' AND invoice_date <= '2023-07-31'
             GROUP by
             distributor_id, distributor_code,distributor_name,
                 beat_id, beat_code, beat_name,
