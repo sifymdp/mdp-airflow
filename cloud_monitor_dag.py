@@ -31,7 +31,7 @@ def test_connection_task(**kwargs):
     #     print("Connection to Google Cloud Monitoring API successful.")
     # except Exception as e:
     #     print(f"Error connecting to Google Cloud Monitoring API: {e}")
-      try:
+    try:
         # Specify the path to your service account key file
         key_file_path = '/opt/airflow/secrets/google_cloud_default.json'
 
@@ -46,7 +46,6 @@ def test_connection_task(**kwargs):
 
         print("Connection to Google Cloud successful.")
         return True
-
     except Exception as e:
         print(f"Error connecting to Google Cloud: {e}")
         return False
