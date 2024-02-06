@@ -3,6 +3,7 @@ from airflow.operators.python import PythonOperator
 from datetime import datetime, timedelta
 from google.cloud import monitoring_v3
 from google.oauth2 import service_account
+from google.auth import credentials
 
 default_args = {
     'owner': 'airflow',
@@ -46,9 +47,11 @@ def test_connection_task(**kwargs):
 
         print("Connection to Google Cloud successful.")
         return True
+
     except Exception as e:
         print(f"Error connecting to Google Cloud: {e}")
         return False
+
 
 test_connection = PythonOperator(
     task_id='test_connection',
