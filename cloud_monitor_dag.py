@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 from google.cloud import monitoring_v3
 from google.oauth2 import service_account
 from google.auth import credentials
+from google.cloud import compute_v1
 
 default_args = {
     'owner': 'airflow',
@@ -20,13 +21,13 @@ dag = DAG(
 
 def test_connection_task(**kwargs):
     try:
-        # Set up Google Cloud Monitoring client
+        Set up Google Cloud Monitoring client
         credentials = service_account.Credentials.from_service_account_file(
             '/opt/airflow/secrets/google_cloud_default.json',
             scopes=['https://www.googleapis.com/auth/monitoring.read']
         )
         client = monitoring_v3.MetricServiceClient(credentials=credentials)
-        project_id = 'airflow-8080'
+        project_id = 'prj-isca-devsecops-test'
         client.list_monitored_resource_descriptors(
             name=f'projects/{project_id}')
         print("Connection to Google Cloud Monitoring API successful.")
