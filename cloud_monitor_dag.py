@@ -26,7 +26,7 @@ def test_connection_task(**kwargs):
         scopes=['https://www.googleapis.com/auth/monitoring.read']
           )
         client = compute_v1.InstancesClient(credentials=credentials)
-        project = 'airflow-8080'
+        project = 'prj-isca-devsecops-test'
         zone = 'asia-south1-a'
         instances = client.list(project=project, zone=zone)
     for instance in instances:
