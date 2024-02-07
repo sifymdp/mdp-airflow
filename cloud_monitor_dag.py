@@ -30,12 +30,12 @@ def test_connection_task(**kwargs):
         zone = 'asia-south1-a'
         instances = client.list(project=project, zone=zone)
         for instance in instances:
-        print("Instance Name:", instance.name)
-        print("Instance ID:", instance.id)
-        print("Machine Type:", instance.machine_type)
-        print("Zone:", instance.zone)
-        print("Status:", instance.status)
-        print("-----------------------")
+            print("Instance Name:", instance.name)
+            print("Instance ID:", instance.id)
+            print("Machine Type:", instance.machine_type)
+            print("Zone:", instance.zone)
+            print("Status:", instance.status)
+            print("-----------------------")
         # credentials = service_account.Credentials.from_service_account_file(
         #     '/opt/airflow/secrets/google_cloud_default.json',
         #     scopes=['https://www.googleapis.com/auth/monitoring.read']
