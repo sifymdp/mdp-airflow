@@ -21,7 +21,7 @@ dag = DAG(
 
 def test_connection_task(**kwargs):
     try:
-        Set up Google Cloud Monitoring client
+
         credentials = service_account.Credentials.from_service_account_file(
             '/opt/airflow/secrets/google_cloud_default.json',
             scopes=['https://www.googleapis.com/auth/monitoring.read']
