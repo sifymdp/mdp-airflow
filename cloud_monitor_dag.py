@@ -29,7 +29,7 @@ def test_connection_task(**kwargs):
         project = 'prj-isca-devsecops-test'
         zone = 'asia-south1-a'
         instances = client.list(project=project, zone=zone)
-    for instance in instances:
+        for instance in instances:
         print("Instance Name:", instance.name)
         print("Instance ID:", instance.id)
         print("Machine Type:", instance.machine_type)
