@@ -14,7 +14,7 @@ default_args = {
     'start_date': datetime.today(),
     'retries': 0,
     'retry_delay': timedelta(minutes=5),
-    'email': ['managementairflow@gmail.com', 'duraisiva1905@gmail.com', 'parukrish21@gmail.com'],
+    'email': ['msg.smdp@gmail.com', 'duraisiva1905@gmail.com', 'parukrish21@gmail.com'],
     'email_on_failure': True,
     'email_on_retry': True
 }
