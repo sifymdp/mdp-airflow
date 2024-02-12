@@ -57,6 +57,7 @@ def get_cloud_function_metrics(**kwargs):
                 start_time = point.interval.start_time
                 end_time = point.interval.end_time
                 if instance_count > 1:
+                    print(start_time,end_time,instance_count)
                     raise AirflowException(f"The instance count ({instance_count}) has exceeded the threshold. "
                                            f"Start time: {start_time}, End time: {end_time}")
 
