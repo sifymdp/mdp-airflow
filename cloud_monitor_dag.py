@@ -34,7 +34,7 @@ def get_cloud_function_metrics(**kwargs):
     project_name = f"projects/{project_id}"
 
     end_time = datetime.utcnow()
-    start_time = end_time - timedelta(minutes=5)
+    start_time = end_time - timedelta(days=9)
 
     interval = monitoring_v3.TimeInterval(
         {
