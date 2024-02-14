@@ -11,62 +11,103 @@ default_args = {
     'start_date': datetime.today(),
     'retries': 0,
     'retry_delay': timedelta(minutes=5),
-    'email': ['managementairflow@gmail.com', 'managementairflow@gmail.com'],
-    'email_on_failure': True,
-    'email_on_retry': True
+    'email': ['managementairflow@gmail.com'],
+    'email_on_failure': False,
+    'email_on_retry': False
 }
+
+
 dag = DAG(
-    'test_gcp_monitoring_connection',
+    'cloud_function_metrics',
     default_args=default_args,
-    schedule_interval=timedelta(minutes=5),
+    schedule_interval=timedelta(minutes=5)
 )
 
+# Function to monitor cloud function metrics
 
-def get_cloud_function_metrics(**kwargs):
-    with open('/opt/airflow/secrets/google_cloud_default.json', 'r') as file:
-        json_content = file.read()
+
+def get_cloud_function_logs():
+
+    with open('/opt/airflow/secrets/cloud_metrics.json', 'r') as metric_file:
+        config = json.load(metric_file)
+
+    with open('/opt/airflow/secrets/google_cloud_default.json', 'r') as key_file:
+        json_content = key_file.read()
     json_account_info = json.loads(json_content)
+
     credentials = service_account.Credentials.from_service_account_info(
         json_account_info)
-    project_id = 'prj-contentportal-test-389901'
-    function_name = 'getImage'
     client = monitoring_v3.MetricServiceClient(credentials=credentials)
-    project_name = f"projects/{project_id}"
+    all_exceeded_instances = []
 
-    end_time = datetime.utcnow()
-    start_time = end_time - timedelta(days=9)
+    for metric_config in config['metrics_cloudfucntions']:
+        # metrics from config
+        project_id = metric_config['project_id']
+        function_name = metric_config['function_name']
+        threshold = metric_config['threshold']
+        # interval for metrics
+        end_time = datetime.utcnow()
+        start_time = end_time - timedelta(days=10)
+        interval = monitoring_v3.TimeInterval(
+            {
+                "end_time": {"seconds": int(end_time.timestamp())},
+                "start_time": {"seconds": int(start_time.timestamp())},
+            }
+        )
 
-    interval = monitoring_v3.TimeInterval(
-        {
-            "end_time": {"seconds": int(end_time.timestamp())},
-            "start_time": {"seconds": int(start_time.timestamp())},
-        }
-    )
-    metric_type = 'cloudfunctions.googleapis.com/function/instance_count'
-    result = client.list_time_series(
-        name=project_name,
-        filter=(f'metric.type="{metric_type}" '
-                f'AND resource.labels.function_name="{function_name}"'),
-        interval=interval,
-        view=monitoring_v3.ListTimeSeriesRequest.TimeSeriesView.FULL,
-    )
-    for page in result.pages:
-        for time_series in page.time_series:
-            for point in time_series.points:
-                instance_count = point.value.int64_value
-                start_time = point.interval.start_time
-                end_time = point.interval.end_time
-                if instance_count > 1:
-                    print(start_time,end_time,instance_count)
-                    raise AirflowException(f"The instance count ({instance_count}) has exceeded the threshold. "
-                                           f"Start time: {start_time}, End time: {end_time}")
+        metric_type = metric_config["metric_name"]
+        project_name = f"projects/{project_id}"
+        cloud_function_logs = client.list_time_series(
+            name=project_name,
+            filter=(f'metric.type="{metric_type}" '
+                    f'AND resource.labels.function_name="{function_name}"'),
+            interval=interval,
+            view=monitoring_v3.ListTimeSeriesRequest.TimeSeriesView.FULL,
+        )
+        exceeded_instances = []
+        for page in cloud_function_logs.pages:
+            for time_series in page.time_series:
+                for point in time_series.points:
+                    value = point.value.int64_value
+                    if value > threshold:
+
+                        input_data = {
+                            "request": {
+                                "subject": "ISCA Anomaly",
+                                "mode": {"name": "isca.helpdesk@timesgroup.com"},
+                                "requester": {"name": "ISCA-PROD"},
+                                "item": {"name": metric_type},
+                                "subcategory": {"name": metric_config['subcategory_name']},
+                                "status": {"name": "Open"},
+                                "template": {"name": "Default Request"},
+                                "request_type": {"name": "Incident"},
+                                "description": f"The instance have exceeded the threshold for metric {metric_type}",
+                                "category": {"name": metric_config['category_name']}
+                            }
+                        }
+                        exceeded_instances.append({
+                            # 'metric_type': metric_type,
+                            # 'value': value,
+                            # 'start_time': point.interval.start_time,
+                            # 'end_time': point.interval.end_time
+                            'data': input_data
+                        })
+
+        all_exceeded_instances.extend(exceeded_instances)
+        # sent to db mongo as json
+
+# exception for connection and null values
+# map the retrieved data with the object given
+
+    if all_exceeded_instances:
+        raise AirflowException(
+            f"The following instances have exceeded their thresholds:\n {all_exceeded_instances} \n")
 
 
-get_metrics = PythonOperator(
+cloud_function_logs = PythonOperator(
     task_id='get_cloud_function_metrics',
-    python_callable=get_cloud_function_metrics,
-    provide_context=True,
-    dag=dag,
+    python_callable=get_cloud_function_logs,
+    dag=dag
 )
 
-get_metrics
+cloud_function_logs
