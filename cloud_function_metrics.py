@@ -5,6 +5,7 @@ from google.cloud import monitoring_v3
 from google.oauth2 import service_account
 import json
 from airflow.exceptions import AirflowException
+import requests
 
 default_args = {
     'owner': 'airflow',
@@ -18,7 +19,7 @@ default_args = {
 
 
 dag = DAG(
-    'cloud_function_metrics',
+    'cloud2_function_metrics',
     default_args=default_args,
     schedule_interval=timedelta(minutes=5)
 )
@@ -38,8 +39,7 @@ def get_cloud_function_logs():
     credentials = service_account.Credentials.from_service_account_info(
         json_account_info)
     client = monitoring_v3.MetricServiceClient(credentials=credentials)
-    all_exceeded_instances = []
-
+    all_instance_data = []
     for metric_config in config['metrics_cloudfucntions']:
         # metrics from config
         project_id = metric_config['project_id']
@@ -64,44 +64,57 @@ def get_cloud_function_logs():
             interval=interval,
             view=monitoring_v3.ListTimeSeriesRequest.TimeSeriesView.FULL,
         )
-        exceeded_instances = []
-        for page in cloud_function_logs.pages:
-            for time_series in page.time_series:
-                for point in time_series.points:
+        for ts in cloud_function_logs:
+            instance_data = {
+                'project_id': ts.resource.labels['project_id'],
+                'zone': ts.resource.labels['region'],
+                'function_name': ts.resource.labels['function_name'],
+                'metric_type': ts.metric.type,
+                'value_type': ts.value_type,
+                'value': ""
+            }
+            points = []
+            for point in ts.points:
+                # value type int64 is mentioned as 2 and double as 3
+                if ts.value_type == 2:  # int64
                     value = point.value.int64_value
-                    if value > threshold:
+                elif ts.value_type == 5:  # distribution
+                    distribution_value = point.value.distribution_value
+                    # Calculate the mean value from the distribution value
+                    value = distribution_value.mean
+                else:
+                    value = None
+                point_data = {
+                    'value': value
+                }
 
-                        input_data = {
-                            "request": {
-                                "subject": "ISCA Anomaly",
-                                "mode": {"name": "isca.helpdesk@timesgroup.com"},
-                                "requester": {"name": "ISCA-PROD"},
-                                "item": {"name": metric_type},
-                                "subcategory": {"name": metric_config['subcategory_name']},
-                                "status": {"name": "Open"},
-                                "template": {"name": "Default Request"},
-                                "request_type": {"name": "Incident"},
-                                "description": f"The instance have exceeded the threshold for metric {metric_type}",
-                                "category": {"name": metric_config['category_name']}
-                            }
-                        }
-                        exceeded_instances.append({
-                            # 'metric_type': metric_type,
-                            # 'value': value,
-                            # 'start_time': point.interval.start_time,
-                            # 'end_time': point.interval.end_time
-                            'data': input_data
-                        })
+                points.append(point_data['value'])
+                max_value = max(points)
+                instance_data['value'] = max_value
+            all_instance_data.append(instance_data)
+    # print(all_instance_data)
+    requests_data = []
+    for data in all_instance_data:
+        if data['value'] > threshold:
+            request = {
+                "subject": "ISCA Anomaly",
+                "item": {"name": data['metric_type']},
+                "description": f"The instance have exceeded the threshold by value:{data['value']} for {metric_config['subcategory_name']} in {data['function_name']}",
+                "category": {"name": metric_config['category_name']},
+                "subcategory": {"name": metric_config['subcategory_name']},
+                "status": {"name": "Open"},
+                "template": {"name": "Default Request"},
+                "request_type": {"name": "Incident"}
+            }
+            # print(request, "\n")
+            requests_data.append(request)
+    request_data_json = json.dumps(requests_data)
+    print(request_data_json)
 
-        all_exceeded_instances.extend(exceeded_instances)
-        # sent to db mongo as json
 
+# sent to db mongo as json
 # exception for connection and null values
 # map the retrieved data with the object given
-
-    if all_exceeded_instances:
-        raise AirflowException(
-            f"The following instances have exceeded their thresholds:\n {all_exceeded_instances} \n")
 
 
 cloud_function_logs = PythonOperator(
