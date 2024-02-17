@@ -40,11 +40,11 @@ def connect_database(db_params):
 def insert_log_db(request_data_json, valuee):
     connection, cursor = connect_database(db_params)
     sql = """
-    INSERT INTO logs.logs_json (subject, item, description, category, subcategory, status, template_name, request_type,created_at,threshold_Reached)
+    INSERT INTO logs.metric_logs (subject, item, description, category, subcategory, status, template_name, request_type,created_at,threshold_Reached)
     VALUES (%s, %s, %s, %s, %s, %s, %s, %s,%s,%s)
     """
     sqlj = """
-    INSERT INTO logs.metric_logs (log_data, threshold_reached)
+    INSERT INTO logs.logs_json (log_data, threshold_reached)
     VALUES (%s, %s)
     """
 
