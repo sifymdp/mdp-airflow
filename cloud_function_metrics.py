@@ -82,8 +82,8 @@ def insert_log_db(request_data_json, valuee):
 
 def get_cloud_function_logs():
 
-    with open('/opt/airflow/secrets/cloud_metrics.json', 'r') as metric_file:
-        config = json.load(metric_file)
+    # with open('/opt/airflow/secrets/cloud_metrics.json', 'r') as metric_file:
+    #     config = json.load(metric_file)
 
     with open('/opt/airflow/secrets/google_cloud_default.json', 'r') as key_file:
         json_content = key_file.read()
