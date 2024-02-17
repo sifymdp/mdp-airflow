@@ -44,7 +44,7 @@ def insert_log_db(request_data_json, valuee):
     VALUES (%s, %s, %s, %s, %s, %s, %s, %s,%s,%s)
     """
     sqlj = """
-    INSERT INTO logs.metric_logs (data, threshold_reached)
+    INSERT INTO logs.metric_logs (log_data, threshold_reached)
     VALUES (%s, %s)
     """
 
