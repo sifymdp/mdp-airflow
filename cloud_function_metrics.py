@@ -12,7 +12,7 @@ default_args = {
     'retries': 0,
     'retry_delay': timedelta(minutes=5),
     'email': ['managementairflow@gmail.com'],
-    'email_on_failure': False,
+    'email_on_failure': True,
     'email_on_retry': False
 }
 
