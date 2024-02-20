@@ -6,7 +6,7 @@ import psycopg2
 
 default_args = {
     'owner': 'airflow',
-    'start_date': datetime(2024, 2, 20),
+    'start_date': datetime.today(),
     'retries': 0,
     'retry_delay': timedelta(minutes=5),
     'email': ['managementairflow@gmail.com'],
@@ -27,7 +27,7 @@ def retrieve_latest_access_token():
 
     try:
         cursor.execute(
-            "SELECT access_token, expiration_time FROM api_tokens.access_tokens ORDER BY created_time DESC LIMIT 1")
+            "SELECT access_token, expire_time FROM api_tokens.access_tokens ORDER BY created_time DESC LIMIT 1")
         row = cursor.fetchone()
         if row:
             access_token, expiration_time = row
@@ -49,7 +49,7 @@ def update_access_token(new_access_token, expiration_time):
     cursor = conn.cursor()
 
     try:
-        cursor.execute("INSERT INTO api_tokens.access_tokens (access_token, expiration_time) VALUES (%s, %s)",
+        cursor.execute("INSERT INTO api_tokens.access_tokens (access_token, expire_time) VALUES (%s, %s)",
                        (new_access_token, expiration_time))
         conn.commit()
 
