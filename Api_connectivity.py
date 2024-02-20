@@ -73,18 +73,18 @@ def check_and_refresh_access_token():
             print("Access token has expired. Refreshing...")
     else:
         print("No access token found in the database. Refreshing...")
-    response = requests.post(
-        'http://localhost:3000/refresh-token')
-    if response.status_code == 200:
-        data = response.json()
-        new_access_token = data['access_token']
-        expiration_time = datetime.now(
-        ) + timedelta(seconds=data['expires_in'])
-        update_access_token(new_access_token, expiration_time)
-        return new_access_token
-    else:
-        print("Failed to refresh access token.")
-        return None
+        response = requests.post(
+            'http://localhost:3000/refresh-token')
+        if response.status_code == 200:
+            data = response.json()
+            new_access_token = data['access_token']
+            expiration_time = datetime.now(
+            ) + timedelta(seconds=data['expires_in'])
+            update_access_token(new_access_token, expiration_time)
+            return new_access_token
+        else:
+            print("Failed to refresh access token.")
+            return None
 
 
 def make_api_request(access_token):
