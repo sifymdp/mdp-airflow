@@ -28,7 +28,7 @@ dag = DAG(
 def trigger_api_dag(**kwargs):
     return TriggerDagRunOperator(
         task_id='trigger_api_dag',
-        trigger_dag_id='Api_connectivity',
+        trigger_dag_id='Api_connectivity_itsm',
         dag=dag,
     ).execute(context=kwargs)
 
