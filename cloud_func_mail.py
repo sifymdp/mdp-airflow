@@ -19,7 +19,7 @@ default_args = {
 
 
 dag = DAG(
-    'cloud_function_metrics',
+    'cloud_function_mail',
     default_args=default_args,
     schedule_interval=timedelta(minutes=5)
 )
