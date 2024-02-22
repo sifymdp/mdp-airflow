@@ -5,6 +5,7 @@ from google.cloud import monitoring_v3
 from google.oauth2 import service_account
 import json
 import psycopg2
+from airflow.operators.trigger_dagrun import TriggerDagRunOperator
 
 default_args = {
     'owner': 'airflow',
@@ -12,7 +13,7 @@ default_args = {
     'retries': 0,
     'retry_delay': timedelta(minutes=5),
     'email': ['managementairflow@gmail.com'],
-    'email_on_failure': True,
+    'email_on_failure': False,
     'email_on_retry': False
 }
 
@@ -22,6 +23,15 @@ dag = DAG(
     default_args=default_args,
     schedule_interval=timedelta(minutes=5)
 )
+
+
+def trigger_api_dag(**kwargs):
+    return TriggerDagRunOperator(
+        task_id='trigger_api_dag',
+        trigger_dag_id='Api_connectivity',
+        dag=dag,
+    ).execute(context=kwargs)
+
 
 db_params = {
     'host': '172.16.20.117',
@@ -37,39 +47,40 @@ def connect_database(db_params):
     return connection, cursor
 
 
-def insert_log_db(request_data_json, valuee):
+def insert_log_db(request_data_json):
     connection, cursor = connect_database(db_params)
     sql = """
     INSERT INTO logs.metric_logs (subject, item, description, category, subcategory, status, template_name, request_type,created_at,threshold_Reached)
     VALUES (%s, %s, %s, %s, %s, %s, %s, %s,%s,%s)
     """
     sqlj = """
-    INSERT INTO logs.logs_json (log_data, threshold_reached)
+    INSERT INTO logs.metric_logs (data, threshold_reached)
     VALUES (%s, %s)
     """
 
     # insert as json
-    for data in request_data_json:
-        json_data = json.dumps(data)  # Convert the dictionary to a JSON string
-        # Execute the insertion query
-        cursor.execute(sqlj, (json_data, valuee))
-
-        # insert as columns
-    # current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     # for data in request_data_json:
-    #     print("data:", data)
-    #     subject = data['subject']
-    #     item = data['item']['name']
-    #     description = data['description']
-    #     category = data['category']['name']
-    #     subcategory = data['subcategory']['name']
-    #     status = data['status']['name']
-    #     template_name = data['template']['name']
-    #     request_type = data['request_type']['name']
+    # json_data = json.dumps(data)  # Convert the dictionary to a JSON string
+    # Execute the insertion query
+    # cursor.execute(sqlj, (json_data, valuee))
 
-    #     # Execute the insertion query
-    #     cursor.execute(sql, (subject, item, description, category,
-    #                    subcategory, status, template_name, request_type, current_time, valuee))
+    # insert as columns
+    current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    for data in request_data_json:
+        print("data:", data)
+        subject = data['subject']
+        item = data['item']['name']
+        description = data['description']
+        category = data['category']['name']
+        subcategory = data['subcategory']['name']
+        status = data['status']['name']
+        template_name = data['template']['name']
+        request_type = data['request_type']['name']
+        valuee = data['threshold']
+
+        # Execute the insertion query
+        cursor.execute(sql, (subject, item, description, category,
+                       subcategory, status, template_name, request_type, current_time, valuee))
 
 # Commit the transaction and close the connection
     print("inserted successfully")
@@ -82,8 +93,8 @@ def insert_log_db(request_data_json, valuee):
 
 def get_cloud_function_logs():
 
-    # with open('/opt/airflow/secrets/cloud_metrics.json', 'r') as metric_file:
-    #     config = json.load(metric_file)
+    with open('/opt/airflow/secrets/cloud_metrics.json', 'r') as metric_file:
+        config = json.load(metric_file)
 
     with open('/opt/airflow/secrets/google_cloud_default.json', 'r') as key_file:
         json_content = key_file.read()
@@ -92,131 +103,8 @@ def get_cloud_function_logs():
     credentials = service_account.Credentials.from_service_account_info(
         json_account_info)
     client = monitoring_v3.MetricServiceClient(credentials=credentials)
-    requests_data = []  # all the datas that are exceeded the threshold will be stored in this
-    config = {
-        "metrics_cloudfucntions": [
-            {
-                "project_id": "prj-contentportal-test-389901",
-                "function_name": "getImage",
-                "metric_name": "cloudfunctions.googleapis.com/function/instance_count",
-                "threshold": 1,
-                "category_name": "getImage",
-                "subcategory_name": "instance_count"
-            },
-            {
-                "project_id": "prj-contentportal-test-389901",
-                "function_name": "getImage",
-                "metric_name": "cloudfunctions.googleapis.com/function/network_egress",
-                "threshold": 3025551,
-                "category_name": "getImage",
-                "subcategory_name": "network_egress"
-            },
-            {
-                "project_id": "prj-contentportal-test-389901",
-                "function_name": "getImage",
-                "metric_name": "cloudfunctions.googleapis.com/function/user_memory_bytes",
-                "threshold": 194826239.0,
-                "category_name": "getImage",
-                "subcategory_name": "user_memory_bytes"
-            },
-            {
-                "project_id": "prj-contentportal-test-389901",
-                "function_name": "getImage",
-                "metric_name": "cloudfunctions.googleapis.com/function/execution_times",
-                "threshold": 572406735.9999936,
-                "category_name": "getImage",
-                "subcategory_name": "execution_times"
-            },
-            {
-                "project_id": "prj-contentportal-test-389901",
-                "function_name": "getImage",
-                "metric_name": "cloudfunctions.googleapis.com/function/execution_count",
-                "threshold": 62,
-                "category_name": "getImage",
-                "subcategory_name": "execution_count"
-            },
-            {
-                "project_id": "prj-contentportal-test-389901",
-                "function_name": "getImage",
-                "metric_name": "cloudfunctions.googleapis.com/pending_queue/pending_requests",
-                "threshold": 6,
-                "category_name": "getImage",
-                "subcategory_name": "pending_requests"
-            }
-        ],
-        "metrics_gceinstances": [
-            {
-                "project_id": "prj-contentportal-test-389901",
-                "metric_name": "compute.googleapis.com/instance/network/received_bytes_count",
-                "threshold": 2,
-                "category_name": "ISCA_gce_instance",
-                "subcategory_name": "Received bytes"
-            },
-            {
-                "project_id": "prj-contentportal-test-389901",
-                "metric_name": "compute.googleapis.com/instance/network/received_packets_count",
-                "threshold": 2,
-                "category_name": "ISCA_gce_instance",
-                "subcategory_name": "Received packets"
-            },
-            {
-                "project_id": "prj-contentportal-test-389901",
-                "metric_name": "compute.googleapis.com/instance/network/sent_bytes_count",
-                "threshold": 2,
-                "category_name": "ISCA_gce_instance",
-                "subcategory_name": "Sent bytes"
-            },
-            {
-                "project_id": "prj-contentportal-test-389901",
-                "metric_name": "compute.googleapis.com/instance/network/sent_packets_count",
-                "threshold": 2,
-                "category_name": "ISCA_gce_instance",
-                "subcategory_name": "Sent packets"
-            },
-            {
-                "project_id": "prj-contentportal-test-389901",
-                "metric_name": "compute.googleapis.com/instance/memory/balloon/ram_used",
-                "threshold": 2,
-                "category_name": "ISCA_gce_instance",
-                "subcategory_name": "VM Memory Used"
-            },
-            {
-                "project_id": "prj-contentportal-test-389901",
-                "metric_name": "compute.googleapis.com/instance/memory/balloon/swap_in_bytes_count",
-                "threshold": 2,
-                "category_name": "ISCA_gce_instance",
-                "subcategory_name": "VM Swap In"
-            },
-            {
-                "project_id": "prj-contentportal-test-389901",
-                "metric_name": "compute.googleapis.com/instance/memory/balloon/swap_out_bytes_count",
-                "threshold": 2,
-                "category_name": "ISCA_gce_instance",
-                "subcategory_name": "VM Swap Out"
-            },
-            {
-                "project_id": "prj-contentportal-test-389901",
-                "metric_name": "compute.googleapis.com/instance/cpu/utilization",
-                "threshold": 2,
-                "category_name": "ISCA_gce_instance",
-                "subcategory_name": "CPU utilization"
-            },
-            {
-                "project_id": "prj-contentportal-test-389901",
-                "metric_name": "compute.googleapis.com/firewall/dropped_packets_count",
-                "threshold": 2,
-                "category_name": "ISCA_gce_instance",
-                "subcategory_name": "Dropped packets"
-            },
-            {
-                "project_id": "prj-contentportal-test-389901",
-                "metric_name": "compute.googleapis.com/firewall/dropped_bytes_count",
-                "threshold": 2,
-                "category_name": "ISCA_gce_instance",
-                "subcategory_name": "Dropped bytes"
-            }
-        ]
-    }
+    requests_data_alert = []
+    request_db = []  # all the datas that are exceeded the threshold will be stored in this
 
     for metric_config in config['metrics_cloudfucntions']:
         # metrics from config
@@ -278,6 +166,7 @@ def get_cloud_function_logs():
              # all the retrieved datas are in instance data list are checked for threshold reach ..
             # if reached ..they are stored in request_data for alert in mapped to given json structure
             if instance_data['value'] > threshold:
+                # alertjson
                 request = {
                     "subject": "ISCA Anomaly",
                     "item": {"name": instance_data['metric_type']},
@@ -288,23 +177,44 @@ def get_cloud_function_logs():
                     "template": {"name": "Default Request"},
                     "request_type": {"name": "Incident"}
                 }
-                requests_data.append(request)
-                # giving the last iterated value instead have to make it dynamic
-                valuee = instance_data['value']
-    # the datas are then stored as json datas for sending as api request
-    request_data_json = json.dumps(requests_data)
-    print("raw:", request_data_json)
-    request_data_json = json.loads(request_data_json)
-    insert_log_db(request_data_json, valuee)
+                # db_thresholdjson
+                request_json_db = {
+                    "subject": "ISCA Anomaly",
+                    "item": {"name": instance_data['metric_type']},
+                    "description": f"The instance have exceeded the threshold by value:{instance_data['value']} for {instance_data['subcategory_name']} in {instance_data['function_name']}",
+                    "category": {"name": instance_data['category_name']},
+                    "subcategory": {"name": instance_data['subcategory_name']},
+                    "status": {"name": "Open"},
+                    "template": {"name": "Default Request"},
+                    "request_type": {"name": "Incident"},
+                    "threshold": instance_data['value']
+                }
+                # alertjson
+                requests_data_alert.append(request)
+                # dbjson
+                request_db.append(request_json_db)
+
+    # db_insert with actual threshold
+    insert_log_db(request_db)
+
+    if requests_data_alert is not None:
+        print(requests_data_alert)
+        logs_file_path = '/opt/airflow/logs_gcp/gce_logs.json'
+        with open(logs_file_path, 'w') as logs_file:
+            json.dump(requests_data_alert, logs_file)
+        print("Logs saved to:", logs_file_path)
 
 
-# sent to db mongo as json
-# exception for connection and null values
-# map the retrieved data with the object given
 cloud_function_logs = PythonOperator(
     task_id='get_cloud_function_metrics',
     python_callable=get_cloud_function_logs,
     dag=dag
 )
 
-cloud_function_logs
+trigger_api = PythonOperator(
+    task_id='trigger_api_task',
+    python_callable=trigger_api_dag,
+    provide_context=True,
+    dag=dag,
+)
+cloud_function_logs >> trigger_api
