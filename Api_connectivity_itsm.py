@@ -4,12 +4,15 @@ from datetime import datetime, timedelta
 import requests
 import psycopg2
 import json
-
+import urllib
+from urllib.error import HTTPError
+from urllib.parse import urlencode
+from urllib.request import urlopen, Request
 default_args = {
     'owner': 'airflow',
     'start_date': datetime.today(),
-    'retries': 0,
-    'retry_delay': timedelta(minutes=5),
+    # 'retries': 0,
+    # 'retry_delay': timedelta(minutes=5),
     'email': ['managementairflow@gmail.com'],
     'email_on_failure': False,
     'email_on_retry': False
@@ -97,7 +100,7 @@ def check_and_refresh_access_token():
         'client_secret': client_secret,
         'redirect_uri': redirect_uri
     }
-
+    print("payload for refresh:", payload)
     try:
         response = requests.post(token_refresh_url, data=payload)
         new_token_data = response.json()
@@ -111,47 +114,24 @@ def check_and_refresh_access_token():
     except Exception as e:
         print("Failed to refresh access token:", e)
         return None
-        ###########################################
-    # response = requests.post(
-    #     'http://host.docker.internal:3000/refresh-token')
-    # if response.status_code == 200:
-    #     data = response.json()
-    #     new_access_token = data.get('access_token')
-    #     expires_in = data.get('expires_in')
-    #     print("Expires in:", expires_in)
-    #     expiration_time = datetime.now() + timedelta(seconds=expires_in)
-    #     print("Refreshed!")
-    #     # then the refreshed token will be updated to db
-    #     update_access_token(new_access_token, expiration_time)
-    #     return new_access_token
-    # else:
-    #     print("Failed to refresh access token.")
-    #     return None
 
 
-# def make_api_request(**kwargs):
-#     payload = {
-#         'request': {
-#             'subject': 'ISCA Grafan API test'
-#         }
-#     }
-#     response = requests.post(
-#         'http://host.docker.internal:3000/create-request', json=payload)
-#     if response.status_code == 200:
-#         print("API Request successful.")
-#     else:
-#         print("API Request failed:", response.text)
 def make_api_request(**kwargs):
 
     # Get the access token from the task instance context
     access_token = kwargs['access_token']
     with open('/opt/airflow/secrets/Api_token_config.json', 'r') as api_det:
         Req_det = json.load(api_det)
-        # load the details from file to variables
-    api_request_config = api_det.get('api_request', {})
+
+    # Extract API request details
+    api_request_config = Req_det.get('api_request', {})
     endpoint_url = api_request_config.get('endpoint_url')
     headers = api_request_config.get('headers')
 
+    # Populate Authorization header with access token
+    headers['Authorization'] = f'Zoho-Oauthtoken {access_token}'
+    print("payload for sending api", access_token,
+          "\n", endpoint_url, "\n", headers)
     # Load the logs from the JSON file
     logs_file_path = '/opt/airflow/logs_gcp/gce_logs.json'
     with open(logs_file_path, 'r') as logs_file:
@@ -159,21 +139,32 @@ def make_api_request(**kwargs):
     # Iterate over each log entry and send a separate API request
     for log_entry in logs_data:
         print("LOG_ENTRY:", log_entry)
-        payload = log_entry
-        response = requests.post(
-            endpoint_url, headers=headers, json=payload)
-        if response.status_code == 200:
-            print(f"{datetime.now()}: API Request successful.")
-        else:
-            print(
-                "API Request failed with status code {response.status_code}.")
-            print(f"{datetime.now()}: Response content: {response.text}")
+        input_data = {"request": log_entry}
+        print("input_data::::", input_data)
+        data = urlencode({"input_data": input_data}).encode()
+        print("encodedddddddddd", data)
+        # httprequest = Request(
+        # url=endpoint_url, headers=headers, data=data, method="POST")
+        # try:
+        #     with urlopen(httprequest) as response:
+        #         print("sent successfull", response.read().decode())
+        # except HTTPError as e:
+        #     print("errorrr", e.read().decode())
+
+        # sending separate api request
+        # response = requests.post(endpoint_url, json=payload, headers=headers)
+        # if response.status_code == 200:
+        #     print(f"{datetime.now()}: API Request successful.")
+        # else:
+        #     print(
+        #         "API Request failed with status code {response.status_code}.")
+        #     print(f"{datetime.now()}: Response content: {response.text}")
 
 
 Api_connectivity_itsm = DAG(
     'Api_connectivity_itsm',
     default_args=default_args,
-    schedule_interval=timedelta(minutes=60)
+    # schedule_interval=timedelta(minutes=60)
 )
 
 task_check_and_refresh_access_token = PythonOperator(
