@@ -10,8 +10,8 @@ from airflow.operators.trigger_dagrun import TriggerDagRunOperator
 default_args = {
     'owner': 'airflow',
     'start_date': datetime.today(),
-    'retries': 0,
-    'retry_delay': timedelta(minutes=5),
+    # 'retries': 0,
+    # 'retry_delay': timedelta(minutes=5),
     'email': ['managementairflow@gmail.com'],
     'email_on_failure': False,
     'email_on_retry': False
@@ -21,7 +21,7 @@ default_args = {
 dag = DAG(
     'cloud2_function_metrics',
     default_args=default_args,
-    schedule_interval=timedelta(minutes=5)
+    # schedule_interval=timedelta(minutes=5)
 )
 
 
@@ -169,13 +169,15 @@ def get_cloud_function_logs():
                 # alertjson
                 request = {
                     "subject": "ISCA Anomaly",
+                    "requester": {'name': 'ISCA-PROD'},
+                    # "mode": {'name': 'isca.helpdesk@timesgroup.com'},
                     "item": {"name": instance_data['metric_type']},
+                    "subcategory": {"name": instance_data['subcategory_name']},
+                    "template": {"name": "Default Request"},
+                    "request_type": {"name": "Incident"},
                     "description": f"The instance have exceeded the threshold by value:{instance_data['value']} for {instance_data['subcategory_name']} in {instance_data['function_name']}",
                     "category": {"name": instance_data['category_name']},
-                    "subcategory": {"name": instance_data['subcategory_name']},
-                    "status": {"name": "Open"},
-                    "template": {"name": "Default Request"},
-                    "request_type": {"name": "Incident"}
+
                 }
                 # db_thresholdjson
                 request_json_db = {
