@@ -47,9 +47,12 @@ FROM
     AND st.job_id in (select j.id  from jobs j where scope='b183121f-e258-4852-bfd2-a32a3d8c6200' order by updated_at desc limit 1)
     order by ss.updated_at desc limit 1
         """   
-    res=cursor.execute(sql)
+    sqll="""     select job_type,run_state from public.stream_statuses ss where job_id in (select j.id  from jobs j where scope='b183121f-e258-4852-bfd2-a32a3d8c6200' order by updated_at desc limit 1) and connection_id in ('b183121f-e258-4852-bfd2-a32a3d8c6200')
+"""
+    res1=cursor.execute(sql)
+    res2=cursor.execute(sqll)
     # print(res[0],res[1],res[2],res[3])
-    print("result:::::",cursor.execute(sql))
+    print("result:::::",res1,"res22:::",res22)
 
     conn.commit()
     cursor.close()
