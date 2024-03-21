@@ -53,17 +53,14 @@ FROM
     res1 = cursor.fetchall() 
     cursor.execute(sqll) 
     res2=cursor.fetchall()
-    # print(res[0],res[1],res[2],res[3])
     conn.commit()
     cursor.close()
     conn.close()
-    print("result:::::",res1,"res22:::",res2)
     return res1,res2
     
 
 def send_email_alert(**kwargs):
     res1,res2 = kwargs.get('ti').xcom_pull(task_ids='query_airbyte_logs')
-    print("ressss:::",res1[0],res2[0],":::",type(res1),type(res2))
     res1_t = res1[0]
     res2_t = res2[0]
     subject = "Latest Airbyte Sync Record"
