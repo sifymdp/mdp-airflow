@@ -58,21 +58,12 @@ FROM
     cursor.close()
     conn.close()
     print("result:::::",res1,"res22:::",res2)
-    # subject = "Latest Airbyte Sync Record"
-    # body = f"Records Emitted: {res[2]}\nConnection Name: {res[0]}\nStream Name: {res[1]}\nDate: {res[4]}"
-    # to = ['managementairflow@gmail.com']
+    return res1,res2
+    
 
-    # return EmailOperator(
-    #     task_id='send_email',
-    #     to=to,
-    #     subject=subject,
-    #     html_content=body,
-    #     dag=dag,
-    # ).execute(context=None)
-
-def send_email_alert(res):
+def send_email_alert(res1,res2):
     subject = "Latest Airbyte Sync Record"
-    body = f"stream_namespace: {res[0]}\n stream_name: {res[1]}\nrecords_emitted: {res[2]}\nrecords_committed: {res[3]}\nDatetime: {res[4]}"
+    body = f"Stream namespace: {res1[0]}\n Stream name: {res1[1]}\nRecords emitted: {res1[2]}\nRecords committed: {res1[3]}\nDatetime: {res1[4]}\nJob Type:{res2[0]}\nRun State:{res2[1]}"
     to = ['managementairflow@gmail.com']
 
     return EmailOperator(
@@ -89,11 +80,11 @@ task_query = PythonOperator(
     dag=dag,
 )
 
-# task_send_email = PythonOperator(
-#     task_id='send_email_alert',
-#     python_callable=send_email_alert,
-#     provide_context=True,
-#     dag=dag,
-# )
+task_send_email = PythonOperator(
+    task_id='send_email_alert',
+    python_callable=send_email_alert,
+    provide_context=True,
+    dag=dag,
+)
 
-task_query 
+task_query >>task_send_email
