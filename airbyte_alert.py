@@ -28,8 +28,8 @@ dag = DAG(
     schedule_interval=timedelta(days=1),
 )
 
-def query_airbyte_logs(**db_params):
-    conn=psycopg2.connect(db_params)
+def query_airbyte_logs():
+    conn=psycopg2.connect(**db_params)
     cursor=conn.cursor()
     sql="""select 
     ss.stream_namespace,
