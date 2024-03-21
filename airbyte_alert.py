@@ -55,7 +55,7 @@ FROM
     conn.commit()
     cursor.close()
     conn.close()
-    print("result:::::",res1,"res22:::",res22)
+    print("result:::::",res1,"res22:::",res2)
     # subject = "Latest Airbyte Sync Record"
     # body = f"Records Emitted: {res[2]}\nConnection Name: {res[0]}\nStream Name: {res[1]}\nDate: {res[4]}"
     # to = ['managementairflow@gmail.com']
