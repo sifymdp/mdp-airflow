@@ -49,7 +49,7 @@ FROM
         """    
     res=cursor.execute(sql)
     # print(res[0],res[1],res[2],res[3])
-    print(res)
+    print(cursor.execute(sql))
 
     conn.commit()
     cursor.close()
