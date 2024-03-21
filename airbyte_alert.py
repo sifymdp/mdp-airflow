@@ -11,7 +11,7 @@ default_args = {
     'start_date': datetime(2024, 3, 19),
     'email_on_failure': True,
     'email_on_retry': False,
-    'retries': 1,
+    'retries': 0,
     'retry_delay': timedelta(minutes=5),
 }
 
@@ -52,17 +52,17 @@ FROM
     conn.commit()
     cursor.close()
     conn.close()
-    subject = "Latest Airbyte Sync Record"
-    body = f"Records Emitted: {res[2]}\nConnection Name: {res[0]}\nStream Name: {res[1]}\nDate: {res[4]}"
-    to = ['managementairflow@gmail.com']
+    # subject = "Latest Airbyte Sync Record"
+    # body = f"Records Emitted: {res[2]}\nConnection Name: {res[0]}\nStream Name: {res[1]}\nDate: {res[4]}"
+    # to = ['managementairflow@gmail.com']
 
-    return EmailOperator(
-        task_id='send_email',
-        to=to,
-        subject=subject,
-        html_content=body,
-        dag=dag,
-    ).execute(context=None)
+    # return EmailOperator(
+    #     task_id='send_email',
+    #     to=to,
+    #     subject=subject,
+    #     html_content=body,
+    #     dag=dag,
+    # ).execute(context=None)
 
 def send_email_alert(res):
     subject = "Latest Airbyte Sync Record"
