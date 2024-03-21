@@ -48,6 +48,7 @@ FROM
     order by ss.updated_at desc limit 1
         """    
     res=cursor.execute(sql)
+    print(res[0],res[1],res[2],res[3])
 
     conn.commit()
     cursor.close()
