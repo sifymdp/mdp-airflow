@@ -64,8 +64,10 @@ FROM
 def send_email_alert(**kwargs):
     res1,res2 = kwargs.get('ti').xcom_pull(task_ids='query_airbyte_logs')
     print("ressss:::",res1[0],res2[0],":::",type(res1),type(res2))
+    res1_t = res1[0]
+    res2_t = res2[0]
     subject = "Latest Airbyte Sync Record"
-    body = f"Stream namespace: {res1[0]}\n Stream name: {res1[1]}\nRecords emitted: {res1[2]}\nRecords committed: {res1[3]}\nDatetime: {res1[4]}\nJob Type:{res2[0]}\nRun State:{res2[1]}"
+    body = f"Stream namespace: {res1_t[0]}\n Stream name: {res1_t[1]}\nRecords emitted: {res1_t[2]}\nRecords committed: {res1_t[3]}\nDatetime: {res1_t[4]}\nJob Type:{res2_t[0]}\nRun State:{res2_t[1]}"
     to = ['managementairflow@gmail.com']
 
     return EmailOperator(
