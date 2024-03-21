@@ -47,7 +47,6 @@ FROM
     AND st.job_id in (select j.id  from jobs j where scope='b183121f-e258-4852-bfd2-a32a3d8c6200' order by updated_at desc limit 1)
     order by ss.updated_at desc limit 1
         """   
-    sql="""select j.id  from jobs j where scope='b183121f-e258-4852-bfd2-a32a3d8c6200' order by updated_at desc limit 1"""
     res=cursor.execute(sql)
     # print(res[0],res[1],res[2],res[3])
     print("result:::::",cursor.execute(sql))
