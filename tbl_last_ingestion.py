@@ -13,6 +13,7 @@ def delete_previous_month_data(**kwargs):
             day=1) - timedelta(days=1)
         print(f"Deleting data for {previous_of_previous_month}")
     else:
+        print(f"if today is first of month Deleting data for {previous_of_previous_month}")
         print("Current date is not the first day of the month. No data deletion needed.")
 
 
