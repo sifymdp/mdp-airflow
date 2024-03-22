@@ -65,7 +65,7 @@ def send_email_alert(**kwargs):
     res2_t = res2[0]
     subject = "Latest Airbyte Sync Record"
     body = f"Stream namespace: {res1_t[0]}\n Stream name: {res1_t[1]}\nRecords emitted: {res1_t[2]}\nRecords committed: {res1_t[3]}\nDatetime: {res1_t[4]}\nJob Type:{res2_t[0]}\nRun State:{res2_t[1]}"
-    to = ['managementairflow@gmail.com']
+    to = ['managementairflow@gmail.com','saisushmitha.rama@sifycorp.com']
 
     return EmailOperator(
         task_id='send_email',
