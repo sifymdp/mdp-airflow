@@ -137,7 +137,7 @@ default_args = {
 }
 
 dag = DAG(
-    'execute_insert_and_delete_data',
+    'tbl_last_ingestion',
     default_args=default_args,
     schedule_interval='@daily',
     catchup=False
