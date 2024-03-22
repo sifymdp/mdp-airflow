@@ -18,7 +18,7 @@ def delete_previous_month_data(**kwargs):
         previous_month = current_date.replace(day=1) - timedelta(days=1)  # =march 31
         previous_of_previous_month_last = previous_month.replace(day=1) - timedelta(days=1)  # =feb 29
         previous_of_previous_month_first = previous_of_previous_month_last.replace(day=1)  # =feb1
-        conn = psycopg2.connect(db_params)
+        conn = psycopg2.connect(**db_params)
         # cursor = conn.cursor()
         # sql = f"""delete from rpt_awll1201.tbl_sales_data_last 
         #           where createdtime between {previous_of_previous_month_first} and {previous_of_previous_month_last}"""
@@ -137,7 +137,7 @@ default_args = {
 }
 
 dag = DAG(
-    'tbl_last_ingestion',
+    'execute_insert_and_delete_data',
     default_args=default_args,
     schedule_interval='@daily',
     catchup=False
