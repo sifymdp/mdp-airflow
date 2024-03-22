@@ -6,14 +6,14 @@ import psycopg2
 
 def delete_previous_month_data(**kwargs):
     current_date = datetime.now().date()
+    
 
-    if current_date.day == 1:
+    if current_date.day == True:
         previous_month = current_date.replace(day=1) - timedelta(days=1)
         previous_of_previous_month = previous_month.replace(
             day=1) - timedelta(days=1)
         print(f"Deleting data for {previous_of_previous_month}")
     else:
-        print(f"if today is first of month Deleting data for {previous_of_previous_month}")
         print("Current date is not the first day of the month. No data deletion needed.")
 
 
