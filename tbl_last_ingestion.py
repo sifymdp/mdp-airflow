@@ -7,9 +7,11 @@ import psycopg2
 def delete_previous_month_data(**kwargs):
     # current_date = datetime.now().date()
     current_date = "2024-04-01"
+    current_datee = datetime.strptime(current_date, "%Y-%m-%d")
+
     
 
-    if current_date.day == 1:
+    if current_datee.day == 1:
         previous_month = current_date.replace(day=1) - timedelta(days=1)
         previous_of_previous_month = previous_month.replace(
             day=1) - timedelta(days=1)
