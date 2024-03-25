@@ -69,7 +69,27 @@ def send_email_alert(**kwargs):
     table=tabulate(data,headers,tablefmt="grid")
     subject = "Latest Airbyte Sync Record"
     # body = f"Stream namespace: {res1_t[0]}\n Stream name: {res1_t[1]}\nRecords emitted: {res1_t[2]}\nRecords committed: {res1_t[3]}\nDatetime: {res1_t[4]}\nJob Type:{res2_t[0]}\nRun State:{res2_t[1]}"
-    body=table
+    body=f"<table>
+    <tr>
+        <th>Stream namespace</th>
+        <th>Stream name</th>
+        <th>Records emitted</th>
+        <th>Records committed</th>
+        <th>Datetime</th>
+        <th>Job Type</th>
+        <th>Run State</th>
+    </tr>
+    <tr>
+        <td>{res1_t[0]}</td>
+        <td>{res1_t[1]}</td>
+        <td>{res1_t[2]}</td>
+        <td>{res1_t[3]}</td>
+        <td>{res1_t[4]}</td>
+        <td>{res2_t[0]}</td>
+        <td>{res2_t[0]}</td>
+    </tr>
+</table>
+"
     to = ['managementairflow@gmail.com','saisushmitha.rama@sifycorp.com']
 
     return EmailOperator(
