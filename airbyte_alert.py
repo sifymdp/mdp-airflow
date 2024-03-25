@@ -65,7 +65,7 @@ def send_email_alert(**kwargs):
     res1_t = res1[0]
     res2_t = res2[0]
     headers=["Stream namespace","Stream name","Records emitted","Records committed","Datetime","Job Type","Run State"]
-    data=[res1_t[0],res1_t[1],res1_t[2],res1_t[3],res1_t[4],res2_t[0],res2_t[1]]
+    data=[[res1_t[0],res1_t[1],res1_t[2],res1_t[3],res1_t[4],res2_t[0],res2_t[1]]]
     table=tabulate(data,headers,tablefmt="grid")
     subject = "Latest Airbyte Sync Record"
     # body = f"Stream namespace: {res1_t[0]}\n Stream name: {res1_t[1]}\nRecords emitted: {res1_t[2]}\nRecords committed: {res1_t[3]}\nDatetime: {res1_t[4]}\nJob Type:{res2_t[0]}\nRun State:{res2_t[1]}"
