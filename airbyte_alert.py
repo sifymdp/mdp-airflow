@@ -69,30 +69,27 @@ def send_email_alert(**kwargs):
     table=tabulate(data,headers,tablefmt="grid")
     subject = "Latest Airbyte Sync Record"
     # body = f"Stream namespace: {res1_t[0]}\n Stream name: {res1_t[1]}\nRecords emitted: {res1_t[2]}\nRecords committed: {res1_t[3]}\nDatetime: {res1_t[4]}\nJob Type:{res2_t[0]}\nRun State:{res2_t[1]}"
-    body=f"""<table style="font-family: arial, sans-serif;
-  border-collapse: collapse;
-  width: 100%;">
+    body=f"""<table style="font-family: arial, sans-serif; border-collapse: collapse; width: 100%;">
     <tr>
-        <th style="border: 1px solid #dddddd;
-  text-align: left;padding: 8px;">Stream namespace</th>
-        <th>Stream name</th>
-        <th>Records emitted</th>
-        <th>Records committed</th>
-        <th>Datetime</th>
-        <th>Job Type</th>
-        <th>Run State</th>
+        <th style="border: 1px solid #dddddd; text-align: left; padding: 8px;">Stream namespace</th>
+        <th style="border: 1px solid #dddddd; text-align: left; padding: 8px;">Stream name</th>
+        <th style="border: 1px solid #dddddd; text-align: left; padding: 8px;">Records emitted</th>
+        <th style="border: 1px solid #dddddd; text-align: left; padding: 8px;">Records committed</th>
+        <th style="border: 1px solid #dddddd; text-align: left; padding: 8px;">Datetime</th>
+        <th style="border: 1px solid #dddddd; text-align: left; padding: 8px;">Job Type</th>
+        <th style="border: 1px solid #dddddd; text-align: left; padding: 8px;">Run State</th>
     </tr>
-    <tr >
-        <td style="border: 1px solid #dddddd;
-  text-align: left;padding: 8px;">{res1_t[0]}</td>
-        <td>{res1_t[1]}</td>
-        <td>{res1_t[2]}</td>
-        <td>{res1_t[3]}</td>
-        <td>{res1_t[4]}</td>
-        <td>{res2_t[0]}</td>
-        <td>{res2_t[0]}</td>
+    <tr>
+        <td style="border: 1px solid #dddddd; text-align: left; padding: 8px;">{res1_t[0]}</td>
+        <td style="border: 1px solid #dddddd; text-align: left; padding: 8px;">{res1_t[1]}</td>
+        <td style="border: 1px solid #dddddd; text-align: left; padding: 8px;">{res1_t[2]}</td>
+        <td style="border: 1px solid #dddddd; text-align: left; padding: 8px;">{res1_t[3]}</td>
+        <td style="border: 1px solid #dddddd; text-align: left; padding: 8px;">{res1_t[4]}</td>
+        <td style="border: 1px solid #dddddd; text-align: left; padding: 8px;">{res2_t[0]}</td>
+        <td style="border: 1px solid #dddddd; text-align: left; padding: 8px;">{res2_t[1]}</td>
     </tr>
 </table>
+
 """
     to = ['managementairflow@gmail.com']
 
