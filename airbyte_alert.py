@@ -70,7 +70,7 @@ def send_email_alert(**kwargs):
     subject = "Latest Airbyte Sync Record"
     # body = f"Stream namespace: {res1_t[0]}\n Stream name: {res1_t[1]}\nRecords emitted: {res1_t[2]}\nRecords committed: {res1_t[3]}\nDatetime: {res1_t[4]}\nJob Type:{res2_t[0]}\nRun State:{res2_t[1]}"
     body=f"""<table style="border: 1px solid black;">
-    <tr>
+    <tr style="border: 1px solid black;>
         <th>Stream namespace</th>
         <th>Stream name</th>
         <th>Records emitted</th>
@@ -79,7 +79,7 @@ def send_email_alert(**kwargs):
         <th>Job Type</th>
         <th>Run State</th>
     </tr>
-    <tr>
+    <tr style="border: 1px solid black;>
         <td>{res1_t[0]}</td>
         <td>{res1_t[1]}</td>
         <td>{res1_t[2]}</td>
@@ -90,7 +90,7 @@ def send_email_alert(**kwargs):
     </tr>
 </table>
 """
-    to = ['managementairflow@gmail.com','saisushmitha.rama@sifycorp.com']
+    to = ['managementairflow@gmail.com']
 
     return EmailOperator(
         task_id='send_email',
