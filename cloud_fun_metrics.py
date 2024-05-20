@@ -129,11 +129,11 @@ def insert_log_db(request_data_json):
 
 def get_cloud_function_logs():
 
-    with open("/opt/airflow/secrets/metrics_cloudfunctions.json", "r") as metric_file:
+    with open("/opt/airflow/secrets/cloud_metrics.json", "r") as metric_file:
         config = json.load(metric_file)
 
     with open(
-        "/opt/airflow/secrets/prj-contentportal-test-389901-d0b6ce4c66e6.json", "r"
+        "/opt/airflow/secrets/google_cloud_default.json", "r"
     ) as key_file:
         json_content = key_file.read()
     json_account_info = json.loads(json_content)
@@ -246,7 +246,6 @@ def get_cloud_function_logs():
                         "filter": (f'metric.type="{metric_type}" '
                                 f'AND resource.labels.function_name="{function_name}" '
                                 f'AND resource.labels.project_id="{project_id}" '
-
                                     ),
                         "interval": interval,
                         "view": monitoring_v3.ListTimeSeriesRequest.TimeSeriesView.FULL,
@@ -266,7 +265,7 @@ def get_cloud_function_logs():
                     "value_type": ts.value_type,
                     "value": "",
                 }
-                print("severity:::", severity)
+                # print("severity:::", severity)
                 points = []
                 for point in ts.points:
                     # value type int64 is mentioned as 2 and double as 3
@@ -285,6 +284,9 @@ def get_cloud_function_logs():
                     if point_data["value"] is not None:
                         points.append(point_data["value"])
                     if points:
+                        instance_data["value"] = points[0]
+                        print("valuee::",instance_data['value'])
+
 
                     #     if window_func=="mean":
                     #         Exceeded_T=np.mean(points)
@@ -306,8 +308,6 @@ def get_cloud_function_logs():
                     #                 Exceeded_T=(points[-1] - points[0]) / points[0]
                     # else:
                     #     Exceeded_T=None
-                        instance_data["value"] = points[0]
-                        print("valuee::",instance_data['value'])
                     instance_data["category_name"] = category_name
                     instance_data["subcategory_name"] = subcategory_name
                 # all the retrieved datas are in instance data list are checked for threshold reach ..
