@@ -40,7 +40,7 @@ default_args = {
 
 
 dag = DAG(
-    "cloud_function_metrics",
+    "cloud_f_metrics",
     default_args=default_args,
 )
 
