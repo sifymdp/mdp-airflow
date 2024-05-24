@@ -19,11 +19,14 @@ def delete_previous_month_data(**kwargs):
         previous_of_previous_month_last = previous_month.replace(day=1) - timedelta(days=1)  # =feb 29
         previous_of_previous_month_first = previous_of_previous_month_last.replace(day=1)  # =feb1
         conn = psycopg2.connect(**db_params)
-        # cursor = conn.cursor()
-        # sql = f"""delete from rpt_awll1201.tbl_sales_data_last 
-        #           where createdtime between {previous_of_previous_month_first} and {previous_of_previous_month_last}"""
-        # cursor.execute(sql)
+        cursor = conn.cursor()
+        sql = f"""delete from rpt_awll1201.tbl_sales_data_last 
+                  where createdtime between {previous_of_previous_month_first} and {previous_of_previous_month_last}"""
+        cursor.execute(sql)
         print(f"Deleting data between{previous_of_previous_month_first} and {previous_of_previous_month_last}")
+        conn.commit()
+        cursor.close()
+        conn.close()
     else:
         print("This is not a first of a month")
 
@@ -32,6 +35,8 @@ def execute_insert_query(**kwargs):
     current_date = datetime.now().date()
     query_date=current_date-timedelta(days=1)
     print("query date for insertion::",query_date)
+    conn2 = psycopg2.connect(**db_params)
+    cursor2 = conn2.cursor()
     sql=f"""INSERT INTO rpt_awll1201.tbl_sales_data_last
             (po_num_ref, clustername, discount_amount, cgst_percentage, seller_state_code, scheme_type, cess_amount, salesman_id, uom, listprice, xproduct_category, sales_order_id, sku_name, sgst_amount, product_brand, order_type, invoice_number, longitude, transaction_id, schfreeqtyuom2, baseuom_id, salesman_code, sku_id, total_tax, transaction_type, free_quantity, hsncode, xdistributorpicklist2, transaction_tax_type, xdistributorpicklist3, sales_order_date, uom_conversion, uom3, seller_state, distributor_id, xuniversalid, prohiercode_level2, retailer_name, sku_code, status, base_quantity, salesman_name, schfreeqty, buyer_gstinno, latitude, cess_percentage, transaction_line_id, uom2, schemes_name, beat_id, invoice_date, distributor_code, beat_name, igst_amount, scheme_percentage, prohiername_level2, prohier_id_level2, mobile_orderno, outlet_type, seller_gstinno, invoice_type, igst_percentage, taxable_amount, retailer_city, buyer_state_code, amount, batch_no, quantity, ret_general_class, retailer_code, po_date_ref, retailer_id, manual_discount_amount, pts, createdtime, schemes_code, ptr, tuom_id, pack_type, product_type, sales_order_number, other_tax, beat_code, sgst_percentage, scheme_discount_amount, distributor_name, invoice_level_discount, net_amount, buyer_state, cgst_amount, print_conf_count)
     SELECT po_num_ref ,
@@ -126,12 +131,17 @@ def execute_insert_query(**kwargs):
 	cgst_amount ,
 	print_conf_count  FROM rpt_awll1201.tbl_sales_data x
     WHERE createdtime = {query_date}"""
+    cursor2.execute(sql)
+    conn2.commit()
+    cursor2.close()
+    conn2.close()
+	
 
 
 default_args = {
     'owner': 'airflow',
     'depends_on_past': False,
-    'start_date': datetime(2024, 3, 22),
+    'start_date': datetime.now(),
     'retries': 1,
     'retry_delay': timedelta(minutes=5),
 }
