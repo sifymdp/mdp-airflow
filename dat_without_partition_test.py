@@ -75,6 +75,7 @@ def load_and_store_csv_to_s3(**context):
                         break
             check_arr=[] 
             #keys
+            print("lemght of dict::",len(check_dict))
             for check_dicts in check_dict.keys():
                 if check_dict[check_dicts]>1:
                     # parent_key=check_dicts
