@@ -96,7 +96,8 @@ def load_and_store_csv_to_s3(**context):
                 #         my_dict[key_latest].append('null')
             
             df_chunk = pd.DataFrame(my_dict)
-            df_csv_new = df_csv_new.append(df_chunk, ignore_index=True)
+            # df_csv_new = df_csv_new.append(df_chunk, ignore_index=True)
+            df_csv_new = pd.concat([df_csv_new, df_chunk], ignore_index=True)
             cnt+=1
             print("Basename ", os.path.splitext(log)[0])
             base_name = os.path.splitext(log)[0]
