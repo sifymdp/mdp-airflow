@@ -1,6 +1,7 @@
 from airflow import DAG
 from airflow.operators.python import PythonOperator
-import psycopg2,datetime
+import psycopg2
+from datetime import datetime
 import pandas as pd
 
 db_params = {
@@ -13,7 +14,7 @@ db_params = {
 dag=DAG(
     dag_id='dashboard_script',
     schedule=None,
-    start_date=datetime(2024, 6, 12),
+    start_date=datetime.today(),
 )
 
 def connect_database(db_params):
