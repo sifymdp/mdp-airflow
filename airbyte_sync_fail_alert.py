@@ -47,34 +47,35 @@ def query_airbyte_logs():
 
 def send_email_alert(**kwargs):
     res1= kwargs.get('ti').xcom_pull(task_ids='query_airbyte_logs')
-    subject = "Latest Airbyte Sync Status:"
-    body=f"""<table style="font-family: arial, sans-serif; border-collapse: collapse; width: 100%;">
-    <tr>
-        <th style="border: 1px solid #000000; text-align: left; padding: 8px;">Connection Name</th>
-        <th style="border: 1px solid #000000; text-align: left; padding: 8px;">Job Id</th>
-        <th style="border: 1px solid #000000; text-align: left; padding: 8px;">Config Type</th>
-        <th style="border: 1px solid #000000; text-align: left; padding: 8px;">Sync Status</th>
-    </tr>
-    <tr>
-        <td style="border: 1px solid #000000; text-align: left; padding: 8px;">{res1[0]}</td>
-        <td style="border: 1px solid #000000; text-align: left; padding: 8px;">{res1[1]}</td>
-        <td style="border: 1px solid #000000; text-align: left; padding: 8px;">{res1[2]}</td>
-        <td style="border: 1px solid #000000; text-align: left; padding: 8px;">{res1[3]}</td>
+    print("resss::",res1)
+#     subject = "Latest Airbyte Sync Status:"
+#     body=f"""<table style="font-family: arial, sans-serif; border-collapse: collapse; width: 100%;">
+#     <tr>
+#         <th style="border: 1px solid #000000; text-align: left; padding: 8px;">Connection Name</th>
+#         <th style="border: 1px solid #000000; text-align: left; padding: 8px;">Job Id</th>
+#         <th style="border: 1px solid #000000; text-align: left; padding: 8px;">Config Type</th>
+#         <th style="border: 1px solid #000000; text-align: left; padding: 8px;">Sync Status</th>
+#     </tr>
+#     <tr>
+#         <td style="border: 1px solid #000000; text-align: left; padding: 8px;">{res1[0]}</td>
+#         <td style="border: 1px solid #000000; text-align: left; padding: 8px;">{res1[1]}</td>
+#         <td style="border: 1px solid #000000; text-align: left; padding: 8px;">{res1[2]}</td>
+#         <td style="border: 1px solid #000000; text-align: left; padding: 8px;">{res1[3]}</td>
 
         
-    </tr>
-</table>
+#     </tr>
+# </table>
 
-"""
-    to = ['managementairflow@gmail.com','saisushmitha.rama@sifycorp.com']
+# """
+#     to = ['managementairflow@gmail.com','saisushmitha.rama@sifycorp.com']
 
-    return EmailOperator(
-        task_id='send_email',
-        to=to,
-        subject=subject,
-        html_content=body,
-        dag=dag,
-    ).execute(context=None)
+#     return EmailOperator(
+#         task_id='send_email',
+#         to=to,
+#         subject=subject,
+#         html_content=body,
+#         dag=dag,
+#     ).execute(context=None)
 
 task_query = PythonOperator(
     task_id='query_airbyte_sync_failure',
