@@ -69,7 +69,7 @@ def send_email_alert(**kwargs):
     </table>
     
     """
-        to = ['managementairflow@gmail.com','saisushmitha.rama@sifycorp.com']
+        to = ['managementairflow@gmail.com']
     
         return EmailOperator(
             task_id='send_email',
