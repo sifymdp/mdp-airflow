@@ -46,7 +46,8 @@ def query_airbyte_logs():
     
 
 def send_email_alert(**kwargs):
-    res1= kwargs.get('ti').xcom_pull(task_ids='query_airbyte_sync_failure')
+    res= kwargs.get('ti').xcom_pull(task_ids='query_airbyte_sync_failure')
+    res1=res[0]
     print("resss::",res1)
     subject = "Latest Airbyte Sync Status:"
     body=f"""<table style="font-family: arial, sans-serif; border-collapse: collapse; width: 100%;">
