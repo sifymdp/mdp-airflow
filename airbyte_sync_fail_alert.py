@@ -47,9 +47,7 @@ def query_airbyte_logs():
 
 def send_email_alert(**kwargs):
     res1= kwargs.get('ti').xcom_pull(task_ids='query_airbyte_logs')
-    res1_t = res1[0]
-
-    subject = "Latest Airbyte Sync Record"
+    subject = "Latest Airbyte Sync Status:"
     body=f"""<table style="font-family: arial, sans-serif; border-collapse: collapse; width: 100%;">
     <tr>
         <th style="border: 1px solid #000000; text-align: left; padding: 8px;">Connection Name</th>
@@ -58,10 +56,10 @@ def send_email_alert(**kwargs):
         <th style="border: 1px solid #000000; text-align: left; padding: 8px;">Sync Status</th>
     </tr>
     <tr>
-        <td style="border: 1px solid #000000; text-align: left; padding: 8px;">{res1_t[0]}</td>
-        <td style="border: 1px solid #000000; text-align: left; padding: 8px;">{res1_t[1]}</td>
-        <td style="border: 1px solid #000000; text-align: left; padding: 8px;">{res1_t[2]}</td>
-        <td style="border: 1px solid #000000; text-align: left; padding: 8px;">{res1_t[3]}</td>
+        <td style="border: 1px solid #000000; text-align: left; padding: 8px;">{res1[0]}</td>
+        <td style="border: 1px solid #000000; text-align: left; padding: 8px;">{res1[1]}</td>
+        <td style="border: 1px solid #000000; text-align: left; padding: 8px;">{res1[2]}</td>
+        <td style="border: 1px solid #000000; text-align: left; padding: 8px;">{res1[3]}</td>
 
         
     </tr>
