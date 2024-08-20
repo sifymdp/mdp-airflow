@@ -13,8 +13,8 @@ db_params = {
 
 def delete_previous_month_data(**kwargs):
     current_date = datetime.now().date()  # apr 1
-    current_datee=current_date.replace(day=1)
-    if current_datee.day == 1:
+    # current_datee=current_date.replace(day=1)
+    if current_date.day == 1:
         previous_month = current_date.replace(day=1) - timedelta(days=1)  # =march 31
         previous_of_previous_month_last = previous_month.replace(day=1) - timedelta(days=1)  # =feb 29
         previous_of_previous_month_first = previous_of_previous_month_last.replace(day=1)  # =feb1
