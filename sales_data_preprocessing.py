@@ -46,7 +46,7 @@ def sales_data_processing():
     fina_columns = ['sales_order_date', 'retailer_city', 'retailer_name', 'product_type', 'base_quantity', 'base_quantity_sum']
  
     query = f"""
-SELECT {columns_str}, SUM(base_quantity)
+SELECT {columns_str}, SUM(base_quantity) as base_quantity_sum
 FROM "AiMl_Adani".sales_data_may24_forum
 WHERE sales_order_date >= '{sales_order_start_date}'
   AND sales_order_date <= '{sales_order_end_date}'
