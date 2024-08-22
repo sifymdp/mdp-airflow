@@ -39,11 +39,11 @@ def sales_data_processing():
     sales_order_start_date=Variable.get("sales_order_start_date")
     sales_order_end_date=Variable.get("sales_order_end_date")
     retailer_city_name=Variable.get("retailer_city_name")
-    retailer_name_value=Variable.get("retailer_name_value")
+    # retailer_name_value=Variable.get("retailer_name_value")
     product_type_value=Variable.get("product_type_value")
-    columns = ['sales_order_date', 'retailer_city', 'retailer_name', 'product_type', 'base_quantity']
+    columns = ['sales_order_date', 'retailer_city', 'product_type', 'base_quantity']
     columns_str = ", ".join(columns)
-    fina_columns = ['sales_order_date', 'retailer_city', 'retailer_name', 'product_type', 'base_quantity', 'base_quantity_sum']
+    final_columns = ['sales_order_date', 'retailer_city', 'product_type', 'base_quantity', 'base_quantity_sum']
  
     query = f"""
 SELECT {columns_str}, SUM(base_quantity) as base_quantity_sum
@@ -62,7 +62,7 @@ GROUP BY sales_order_date, retailer_city, retailer_name, product_type,base_quant
     
  
 # Creating a DataFrame
-    train_df = pd.DataFrame(data, columns=fina_columns)
+    train_df = pd.DataFrame(data, columns=final_columns)
  
 # Display the DataFrame
     print(train_df.head())
