@@ -4,7 +4,7 @@ from airflow.operators.python_operator import PythonOperator
 from datetime import datetime, timedelta
 import psycopg2
 import pandas as pd
- 
+from airflow.models import Variable
 # Step-2: Define default arguments for tasks
 default_args = {
     'owner': 'Nagesh',
@@ -36,11 +36,11 @@ def fn_connect_to_postGres_db():
 def sales_data_processing():
     cursor,conn = fn_connect_to_postGres_db()
     print("Db connected and cursor created")
-    sales_order_start_date="2024-01-01"
-    sales_order_end_date="2024-12-31"
-    retailer_city_name="ERNAKULAM"
-    retailer_name_value="NOAH MART"
-    product_type_value="26-SOAP CAKE"
+    sales_order_start_date=Variable.get("sales_order_start_date")
+    sales_order_end_date=Variable.get("sales_order_end_date")
+    retailer_city_name=Variable.get("retailer_city_name")
+    retailer_name_value=Variable.get("retailer_name_value")
+    product_type_value=Variable.get("product_type_value")
     columns = ['sales_order_date', 'retailer_city', 'retailer_name', 'product_type', 'base_quantity']
     columns_str = ", ".join(columns)
     fina_columns = ['sales_order_date', 'retailer_city', 'retailer_name', 'product_type', 'base_quantity', 'base_quantity_sum']
