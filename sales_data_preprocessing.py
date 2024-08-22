@@ -54,6 +54,7 @@ WHERE sales_order_date >= '{sales_order_start_date}'
   AND product_type = '{product_type_value}'
 GROUP BY sales_order_date, retailer_city, retailer_name, product_type,base_quantity ORDER BY sales_order_date
 """
+    print(query)
     cursor.execute(query)
     data = cursor.fetchall()
     print("dataa:::",data)
