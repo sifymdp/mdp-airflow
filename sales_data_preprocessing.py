@@ -58,7 +58,8 @@ GROUP BY sales_order_date, retailer_city, retailer_name, product_type,base_quant
     print(query)
     cursor.execute(query)
     data = cursor.fetchall()
-    print("dataa:::",data)
+    print("data:::::",data)
+    print("columns in the dataframe: "fetched_columns)
  
 # Creating a DataFrame
     train_df = pd.DataFrame(data, columns=fetched_columns)
