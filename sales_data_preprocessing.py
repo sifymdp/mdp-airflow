@@ -39,8 +39,8 @@ def sales_data_processing():
     sales_order_start_date="2024-05-01"
     sales_order_end_date="2024-05-31"
     retailer_city_name="ERNAKULAM"
-    retailer_name_value="SURESH STORES"
-    product_type_value="15-CHANA BESAN"
+    retailer_name_value="Chakkalakkal"
+    product_type_value="01-SUN FLOWER"
     columns = ['sales_order_date', 'retailer_city', 'retailer_name', 'product_type', 'base_quantity']
     columns_str = ", ".join(columns)
  
