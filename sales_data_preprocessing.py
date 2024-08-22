@@ -76,7 +76,6 @@ GROUP BY sales_order_date, retailer_city, product_type,base_quantity ORDER BY sa
  
 
 def data_processing():
-    # adani_df=train_df.copy()
     print(train_df.info())
 
     train_df['sales_order_date'] = pd.to_datetime(train_df['sales_order_date'], format='%d-%m-%Y')
