@@ -51,9 +51,8 @@ FROM "AiMl_Adani".sales_data_feb24_to_may24
 WHERE sales_order_date >= '{sales_order_start_date}'
   AND sales_order_date <= '{sales_order_end_date}'
   AND retailer_city = '{retailer_city_name}'
-  AND retailer_name = '{retailer_name_value}'
   AND product_type = '{product_type_value}'
-GROUP BY sales_order_date, retailer_city, retailer_name, product_type,base_quantity ORDER BY sales_order_date
+GROUP BY sales_order_date, retailer_city, product_type,base_quantity ORDER BY sales_order_date
 """
     print(query)
     cursor.execute(query)
