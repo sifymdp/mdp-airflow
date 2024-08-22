@@ -41,9 +41,8 @@ def sales_data_processing():
     retailer_city_name="ERNAKULAM"
     retailer_name_value="Chakkalakkal"
     product_type_value="01-SUN FLOWER"
-    columns = ['sales_order_date', 'retailer_city', 'retailer_name', 'product_type', 'base_quantity']
+    columns = ['sales_order_date', 'retailer_city', 'retailer_name', 'product_type']
     columns_str = ", ".join(columns)
-    fetched_columns=columns.append('base_quantity_sum')
  
     query = f"""
 SELECT {columns_str}, SUM(base_quantity)
@@ -59,10 +58,10 @@ GROUP BY sales_order_date, retailer_city, retailer_name, product_type,base_quant
     cursor.execute(query)
     data = cursor.fetchall()
     print("data:::::",data)
-    print("columns in the dataframe: ",fetched_columns)
+    
  
 # Creating a DataFrame
-    train_df = pd.DataFrame(data, columns=fetched_columns)
+    train_df = pd.DataFrame(data, columns=columns)
  
 # Display the DataFrame
     print(train_df.head())
