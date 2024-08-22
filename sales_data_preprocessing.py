@@ -36,8 +36,8 @@ def fn_connect_to_postGres_db():
 def sales_data_processing():
     cursor,conn = fn_connect_to_postGres_db()
     print("Db connected and cursor created")
-    sales_order_start_date="2024-05-01"
-    sales_order_end_date="2024-05-31"
+    sales_order_start_date="2024-01-01"
+    sales_order_end_date="2024-12-31"
     retailer_city_name="ERNAKULAM"
     retailer_name_value="Chakkalakkal"
     product_type_value="01-SUN FLOWER"
@@ -47,7 +47,7 @@ def sales_data_processing():
  
     query = f"""
 SELECT {columns_str}, SUM(base_quantity) as base_quantity_sum
-FROM "AiMl_Adani".sales_data_may24_forum
+FROM "AiMl_Adani".sales_data_feb24_to_may24
 WHERE sales_order_date >= '{sales_order_start_date}'
   AND sales_order_date <= '{sales_order_end_date}'
   AND retailer_city = '{retailer_city_name}'
@@ -66,6 +66,7 @@ GROUP BY sales_order_date, retailer_city, retailer_name, product_type,base_quant
  
 # Display the DataFrame
     print(train_df.head())
+    print(train_df.shape)
  
 # Closing the connection
     conn.close()
