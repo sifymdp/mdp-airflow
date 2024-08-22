@@ -60,7 +60,7 @@ GROUP BY sales_order_date, retailer_city, retailer_name, product_type,base_quant
     print("dataa:::",data)
  
 # Creating a DataFrame
-     train_df = pd.DataFrame(data)
+    train_df = pd.DataFrame(data)
  
 # Display the DataFrame
     print(train_df.head())
