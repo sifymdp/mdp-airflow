@@ -36,11 +36,11 @@ def fn_connect_to_postGres_db():
 def sales_data_processing():
     cursor,conn = fn_connect_to_postGres_db()
     print("Db connected and cursor created")
-    sales_order_start_date="2024-05-03"
-    sales_order_end_date="2024-05-11"
-    retailer_city_name="Chennai"
-    retailer_name_value="Lakshmi Traders"
-    product_type_value="Oil"
+    sales_order_start_date="2024-05-01"
+    sales_order_end_date="2024-05-31"
+    retailer_city_name="ERNAKULAM"
+    retailer_name_value="SURESH STORES"
+    product_type_value="15-CHANA BESAN"
     columns = ['sales_order_date', 'retailer_city', 'retailer_name', 'product_type', 'base_quantity']
     columns_str = ", ".join(columns)
  
