@@ -180,11 +180,6 @@ def data_processing():
     final_result.to_csv("adani_processed_data.csv", index=False)
 
 
-
-
-
-
-
 # Defining Task
 data_processing = PythonOperator(
     task_id='data_processing',
