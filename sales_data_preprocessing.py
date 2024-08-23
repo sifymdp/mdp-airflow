@@ -72,14 +72,14 @@ GROUP BY sales_order_date, retailer_city, product_type, base_quantity ORDER BY s
     conn.close()
     print('Connection closed')
     
-    print('Data preprocessing is in progress...')
-    
+       
     # Pass the DataFrame to data_processing function
     data_processing(train_df)
 
 def data_processing(train_df):
     # Your existing code for data_processing goes here
     print(train_df.info())
+    print('Data preprocessing is in progress...')
 
     train_df['sales_order_date'] = pd.to_datetime(train_df['sales_order_date'], format='%d-%m-%Y')
     train_df = train_df.sort_values(by='sales_order_date')
@@ -99,6 +99,7 @@ def data_processing(train_df):
 
     # Order the DataFrame by the sales_order_date column
     train_df = train_df.sort_values(by='sales_order_date')
+    print('sort the data based on sales_order_date')
 
     # Reset index after dropping rows
     train_df.reset_index(drop=True, inplace=True)
@@ -119,6 +120,7 @@ def data_processing(train_df):
     max_date = train_df['sales_order_date'].max()
     all_dates = pd.date_range(start=min_date, end=max_date, freq='D')
 
+    print('enerate all combinations of date, city, and product, ensuring city-state mapping')
     # Generate all combinations of date, city, and product, ensuring city-state mapping
     combinations = []
     for date, city, product in product(all_dates, cities, products):
@@ -144,6 +146,7 @@ def data_processing(train_df):
 
     original_counts=train_df.copy()
 
+    print('calculate per_day_quantity')
     original_counts['per_day_quantity'].sum()
     print(original_counts.shape)
 
@@ -167,6 +170,7 @@ def data_processing(train_df):
 
     # Apply the function to each group and concatenate the results
     final_result = grouped.apply(calculate_next_7_days_sum).reset_index(drop=True)
+    print('calculate_next_7_days_sum completed...')
 
     # Show the final result
     print(final_result.head(10))
@@ -180,6 +184,8 @@ def data_processing(train_df):
     final_result = final_result.sort_values(by='sales_order_date')
 
     final_result.to_csv("adani_processed_data.csv", index=False)
+    print('data exported to adani_processed_data.csv file...')
+    print('data preprocessing has been completed...')
 
 
 # Defining Task
@@ -189,13 +195,12 @@ fetch_data_from_db = PythonOperator(
     dag=dag,
 )
 
-# # Defining Task
-# data_processing = PythonOperator(
-#     task_id='data_processing',
-#     python_callable=data_processing,
-#     dag=dag,
-# )
+# Defining Task
+data_processing = PythonOperator(
+    task_id='data_processing',
+    python_callable=data_processing,
+    dag=dag,
+)
  
 # Set up the task dependencies
-fetch_data_from_db
-
+fetch_data_from_db >> data_processing
