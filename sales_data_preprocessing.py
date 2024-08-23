@@ -76,16 +76,16 @@ def fetch_data_from_db():
     conn.close()
     print('Connection closed')
 
-def process_data():
+def process_data(train_df):
     temp_file = "/tmp/sales_data.csv"
     
-    # Read the DataFrame from the CSV file
-    if os.path.exists(temp_file):
-        train_df = pd.read_csv(temp_file)
-        print(f"Data loaded from {temp_file}")
-    else:
-        print(f"File {temp_file} not found!")
-        return
+    # # Read the DataFrame from the CSV file
+    # if os.path.exists(temp_file):
+    #     train_df = pd.read_csv(temp_file)
+    #     print(f"Data loaded from {temp_file}")
+    # else:
+    #     print(f"File {temp_file} not found!")
+    #     return
 
     print(train_df.info())
     print('Data preprocessing is in progress...')
