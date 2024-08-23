@@ -37,17 +37,16 @@ def fn_connect_to_postGres_db():
     return cursor,conn
  
 def fetch_data_from_db():
-    cursor,conn = fn_connect_to_postGres_db()
+    cursor, conn = fn_connect_to_postGres_db()
     print("Db connected and cursor created")
-    sales_order_start_date=Variable.get("sales_order_start_date")
-    sales_order_end_date=Variable.get("sales_order_end_date")
-    retailer_city_name=Variable.get("retailer_city_name")
-    # retailer_name_value=Variable.get("retailer_name_value")
-    product_type_value=Variable.get("product_type_value")
+    sales_order_start_date = Variable.get("sales_order_start_date")
+    sales_order_end_date = Variable.get("sales_order_end_date")
+    retailer_city_name = Variable.get("retailer_city_name")
+    product_type_value = Variable.get("product_type_value")
     columns = ['sales_order_date', 'retailer_city', 'product_type', 'base_quantity']
     columns_str = ", ".join(columns)
     final_columns = ['sales_order_date', 'retailer_city', 'product_type', 'base_quantity', 'base_quantity_sum']
- 
+
     query = f"""
 SELECT {columns_str}, SUM(base_quantity) as base_quantity_sum
 FROM "AiMl_Adani".sales_data_feb24_to_may24
@@ -55,31 +54,31 @@ WHERE sales_order_date >= '{sales_order_start_date}'
   AND sales_order_date <= '{sales_order_end_date}'
   AND retailer_city = '{retailer_city_name}'
   AND product_type = '{product_type_value}'
-GROUP BY sales_order_date, retailer_city, product_type,base_quantity ORDER BY sales_order_date
+GROUP BY sales_order_date, retailer_city, product_type, base_quantity ORDER BY sales_order_date
 """
     print(query)
     cursor.execute(query)
     data = cursor.fetchall()
-    print("data:::::",data)
+    print("data:::::", data)
     
- 
-# Creating a DataFrame
+    # Creating a DataFrame
     train_df = pd.DataFrame(data, columns=final_columns)
- 
-# Display the DataFrame
+
+    # Display the DataFrame
     print(train_df.head())
     print(train_df.shape)
- 
-# Closing the connection
+
+    # Closing the connection
     conn.close()
     print('Connection closed')
-    return train_df
-
-    print('data preprocessing is in progress...')
+    
+    print('Data preprocessing is in progress...')
+    
+    # Pass the DataFrame to data_processing function
     data_processing(train_df)
- 
 
 def data_processing(train_df):
+    # Your existing code for data_processing goes here
     print(train_df.info())
 
     train_df['sales_order_date'] = pd.to_datetime(train_df['sales_order_date'], format='%d-%m-%Y')
