@@ -34,13 +34,16 @@ def fn_connect_to_postGres_db():
     cursor = conn.cursor()
     return cursor, conn
 
-def fetch_data_from_db():
+def fetch_data_from_db(**kwargs):
     cursor, conn = fn_connect_to_postGres_db()
     print("Db connected and cursor created")
+    
+    # Fetching data from Airflow Variables
     sales_order_start_date = Variable.get("sales_order_start_date")
     sales_order_end_date = Variable.get("sales_order_end_date")
     retailer_city_name = Variable.get("retailer_city_name")
     product_type_value = Variable.get("product_type_value")
+    
     columns = ['sales_order_date', 'retailer_city', 'product_type', 'base_quantity']
     columns_str = ", ".join(columns)
     final_columns = ['sales_order_date', 'retailer_city', 'product_type', 'base_quantity', 'base_quantity_sum']
@@ -54,26 +57,29 @@ def fetch_data_from_db():
       AND product_type = '{product_type_value}'
     GROUP BY sales_order_date, retailer_city, product_type, base_quantity ORDER BY sales_order_date
     """
-    print(query)
+    
     cursor.execute(query)
     data = cursor.fetchall()
-    print("data:::::", data)
     
     # Creating a DataFrame
     train_df = pd.DataFrame(data, columns=final_columns)
 
-    # Display the DataFrame
-    print(train_df.head())
-    print(train_df.shape)
-
     # Closing the connection
     conn.close()
-    print('Connection closed')
     
-    # Pass the DataFrame to process_data function
-    process_data(train_df)
+    # Push DataFrame to XCom
+    ti = kwargs['ti']
+    ti.xcom_push(key='train_df', value=train_df.to_dict())
 
-def process_data(train_df):
+    print('Data pushed to XCom and connection closed')
+
+def process_data(**kwargs):
+    ti = kwargs['ti']
+    # Pulling the DataFrame from XCom
+    train_df_dict = ti.xcom_pull(key='train_df', task_ids='fetch_data_from_db_task')
+    train_df = pd.DataFrame.from_dict(train_df_dict)
+    
+    print('Data fetched from XCom:')
     print(train_df.info())
     print('Data preprocessing is in progress...')
 
@@ -151,8 +157,11 @@ fetch_data_from_db_task = PythonOperator(
 process_data_task = PythonOperator(
     task_id='process_data_task',
     python_callable=process_data,
+    provide_context=True,  # This allows the task to receive **kwargs
     dag=dag,
 )
 
+
 # Set up task dependencies
 fetch_data_from_db_task >> process_data_task
+
