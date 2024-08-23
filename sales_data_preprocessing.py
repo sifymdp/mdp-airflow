@@ -141,6 +141,7 @@ def process_data(train_df):
     print('data exported to adani_processed_data.csv file...')
     print('data preprocessing has been completed...')
 
+# Define the tasks
 fetch_data_from_db_task = PythonOperator(
     task_id='fetch_data_from_db_task',
     python_callable=fetch_data_from_db,
@@ -153,4 +154,5 @@ process_data_task = PythonOperator(
     dag=dag,
 )
 
+# Set up task dependencies
 fetch_data_from_db_task >> process_data_task
