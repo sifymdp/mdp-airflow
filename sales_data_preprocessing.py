@@ -1,4 +1,3 @@
-# Step-1: Import Libraries
 from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
 from datetime import datetime, timedelta
@@ -17,25 +16,24 @@ default_args = {
     # 'retries': 1,
     # 'retry_delay': timedelta(minutes=5),
 }
- 
+
 # Step-3: Define DAG
 dag = DAG(
-    'sales_data_preprocess_dag',  # DAG ID with your name
+    'sales_data_preprocess_dag',
     default_args=default_args,
     description='Adani Sales data preprocessing DAG',
-    schedule_interval=None,   # timedelta(days=1),
+    schedule_interval=None,
     start_date=datetime(2024, 8, 11),
     catchup=False,
 )
- 
- 
+
 def fn_connect_to_postGres_db():
     conn = psycopg2.connect(
-    database="rpt_awll1201", user='postgres', password='K8V6tOpEn0', host='172.16.20.117', port='5432')
+        database="rpt_awll1201", user='postgres', password='K8V6tOpEn0', host='172.16.20.117', port='5432')
     print("Connection established")
-    cursor =conn.cursor()
-    return cursor,conn
- 
+    cursor = conn.cursor()
+    return cursor, conn
+
 def fetch_data_from_db():
     cursor, conn = fn_connect_to_postGres_db()
     print("Db connected and cursor created")
@@ -48,14 +46,14 @@ def fetch_data_from_db():
     final_columns = ['sales_order_date', 'retailer_city', 'product_type', 'base_quantity', 'base_quantity_sum']
 
     query = f"""
-SELECT {columns_str}, SUM(base_quantity) as base_quantity_sum
-FROM "AiMl_Adani".sales_data_feb24_to_may24
-WHERE sales_order_date >= '{sales_order_start_date}'
-  AND sales_order_date <= '{sales_order_end_date}'
-  AND retailer_city = '{retailer_city_name}'
-  AND product_type = '{product_type_value}'
-GROUP BY sales_order_date, retailer_city, product_type, base_quantity ORDER BY sales_order_date
-"""
+    SELECT {columns_str}, SUM(base_quantity) as base_quantity_sum
+    FROM "AiMl_Adani".sales_data_feb24_to_may24
+    WHERE sales_order_date >= '{sales_order_start_date}'
+      AND sales_order_date <= '{sales_order_end_date}'
+      AND retailer_city = '{retailer_city_name}'
+      AND product_type = '{product_type_value}'
+    GROUP BY sales_order_date, retailer_city, product_type, base_quantity ORDER BY sales_order_date
+    """
     print(query)
     cursor.execute(query)
     data = cursor.fetchall()
@@ -72,7 +70,6 @@ GROUP BY sales_order_date, retailer_city, product_type, base_quantity ORDER BY s
     conn.close()
     print('Connection closed')
     
-       
     # Pass the DataFrame to process_data function
     process_data(train_df)
 
@@ -144,21 +141,16 @@ def process_data(train_df):
     print('data exported to adani_processed_data.csv file...')
     print('data preprocessing has been completed...')
 
-
-
-# Defining Task
-fetch_data_from_db = PythonOperator(
-    task_id='fetch_data_from_db',
+fetch_data_from_db_task = PythonOperator(
+    task_id='fetch_data_from_db_task',
     python_callable=fetch_data_from_db,
     dag=dag,
 )
 
-# Defining Task
 process_data_task = PythonOperator(
     task_id='process_data_task',
     python_callable=process_data,
     dag=dag,
 )
- 
-# Set up the task dependencies
+
 fetch_data_from_db_task >> process_data_task
