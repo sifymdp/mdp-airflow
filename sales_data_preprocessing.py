@@ -6,6 +6,7 @@ import pandas as pd
 from airflow.models import Variable
 from itertools import product
 import numpy as np
+import os
 
 # Step-2: Define default arguments for tasks
 default_args = {
@@ -66,14 +67,26 @@ def fetch_data_from_db():
     print(train_df.head())
     print(train_df.shape)
 
+    # Save the DataFrame to a CSV file
+    temp_file = "/tmp/sales_data.csv"
+    train_df.to_csv(temp_file, index=False)
+    print(f"Data saved to {temp_file}")
+
     # Closing the connection
     conn.close()
     print('Connection closed')
-    
-    # Pass the DataFrame to process_data function
-    process_data(train_df)
 
-def process_data(train_df):
+def process_data():
+    temp_file = "/tmp/sales_data.csv"
+    
+    # Read the DataFrame from the CSV file
+    if os.path.exists(temp_file):
+        train_df = pd.read_csv(temp_file)
+        print(f"Data loaded from {temp_file}")
+    else:
+        print(f"File {temp_file} not found!")
+        return
+
     print(train_df.info())
     print('Data preprocessing is in progress...')
 
