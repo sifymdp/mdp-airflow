@@ -73,12 +73,13 @@ GROUP BY sales_order_date, retailer_city, product_type,base_quantity ORDER BY sa
 # Closing the connection
     conn.close()
     print('Connection closed')
+    return train_df
 
     print('data preprocessing is in progress...')
-    data_processing()
+    data_processing(train_df)
  
 
-def data_processing():
+def data_processing(train_df):
     print(train_df.info())
 
     train_df['sales_order_date'] = pd.to_datetime(train_df['sales_order_date'], format='%d-%m-%Y')
