@@ -73,6 +73,9 @@ GROUP BY sales_order_date, retailer_city, product_type,base_quantity ORDER BY sa
 # Closing the connection
     conn.close()
     print('Connection closed')
+
+    print('data preprocessing is in progress...')
+    data_processing()
  
 
 def data_processing():
@@ -186,12 +189,13 @@ fetch_data_from_db = PythonOperator(
     dag=dag,
 )
 
-# Defining Task
-data_processing = PythonOperator(
-    task_id='data_processing',
-    python_callable=data_processing,
-    dag=dag,
-)
+# # Defining Task
+# data_processing = PythonOperator(
+#     task_id='data_processing',
+#     python_callable=data_processing,
+#     dag=dag,
+# )
  
 # Set up the task dependencies
-fetch_data_from_db >> data_processing
+fetch_data_from_db
+
