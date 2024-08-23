@@ -180,18 +180,18 @@ def data_processing():
 
 
 # Defining Task
-data_processing = PythonOperator(
-    task_id='data_processing',
-    python_callable=data_processing,
-    dag=dag,
-)
- 
-# Defining Task
 fetch_data_from_db = PythonOperator(
     task_id='fetch_data_from_db',
     python_callable=fetch_data_from_db,
     dag=dag,
 )
 
+# Defining Task
+data_processing = PythonOperator(
+    task_id='data_processing',
+    python_callable=data_processing,
+    dag=dag,
+)
+ 
 # Set up the task dependencies
 fetch_data_from_db >> data_processing
