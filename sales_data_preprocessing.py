@@ -154,11 +154,11 @@ fetch_data_from_db = PythonOperator(
 )
 
 # Defining Task
-process_data = PythonOperator(
+process_data_task = PythonOperator(
     task_id='process_data_task',
     python_callable=process_data,
     dag=dag,
 )
  
 # Set up the task dependencies
-fetch_data_from_db >> process_data_task
+fetch_data_from_db_task >> process_data_task
