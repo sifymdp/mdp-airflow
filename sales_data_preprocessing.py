@@ -73,10 +73,10 @@ GROUP BY sales_order_date, retailer_city, product_type, base_quantity ORDER BY s
     print('Connection closed')
     
        
-    # Pass the DataFrame to data_processing function
-    data_processing(train_df)
+    # Pass the DataFrame to process_data function
+    process_data(train_df)
 
-def data_processing(train_df):
+def process_data(train_df):
     print(train_df.info())
     print('Data preprocessing is in progress...')
 
@@ -154,11 +154,11 @@ fetch_data_from_db = PythonOperator(
 )
 
 # Defining Task
-data_processing = PythonOperator(
-    task_id='data_processing',
-    python_callable=data_processing,
+process_data = PythonOperator(
+    task_id='process_data_task',
+    python_callable=process_data,
     dag=dag,
 )
  
 # Set up the task dependencies
-fetch_data_from_db >> data_processing
+fetch_data_from_db >> process_data_task
