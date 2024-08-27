@@ -145,6 +145,7 @@ def process_data(**kwargs):
     final_result = final_result.sort_values(by='sales_order_date')
     final_result.to_csv("adani_processed_data.csv", index=False)
     print('data exported to adani_processed_data.csv file...')
+    print(final_result.shape)
     print('data preprocessing has been completed...')
 
 # Define the tasks
