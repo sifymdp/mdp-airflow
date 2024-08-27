@@ -89,7 +89,13 @@ def process_data(**kwargs):
     train_df.dropna(inplace=True)
     print(train_df.info())
 
-    
+    full_date_range = pd.date_range(start=train_df['sales_order_date'].min(), end=train_df['sales_order_date'].max())
+
+    train_df = train_df.set_index('sales_order_date').reindex(full_date_range).fillna(0).reset_index()
+    train_df.rename(columns={'index': 'sales_order_date'}, inplace=True)
+
+    train_df['base_quantity'] = train_df['base_quantity'].fillna(0)
+
 
     train_df = merged_df.groupby(['sales_order_date', 'retailer_city', 'product_type'])['base_quantity'].sum().reset_index(name='per_day_quantity')
     original_counts = train_df.copy()
