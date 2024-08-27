@@ -141,11 +141,12 @@ def process_data(**kwargs):
     final_result['Next_7_days_count'] = final_result['Next_7_days_count'].fillna(0)
     print(final_result.isnull().sum())
     print(final_result.head())
+    print(final_result.shape)
 
     final_result = final_result.sort_values(by='sales_order_date')
     final_result.to_csv("adani_processed_data.csv", index=False)
     print('data exported to adani_processed_data.csv file...')
-    print(final_result.shape)
+    
     print('data preprocessing has been completed...')
 
 # Define the tasks
